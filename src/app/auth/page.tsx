@@ -1,22 +1,20 @@
 "use client";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function AuthPage() {
-
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
   });
-
   const router = useRouter();
 
   const [isLoginForm, setIsLoginForm] = useState(true); // Initially, render login form
   const [isLoading, setIsLoding] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<any>("");
 
-  const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
+  const handleInputChange = (e: { target: { name: any; value: any } }) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -24,10 +22,13 @@ export default function AuthPage() {
     }));
   };
 
-  const handleSignIn = async (formData: { email: string; password: string; }) => {
+  const handleSignIn = async (formData: {
+    email: string;
+    password: string;
+  }) => {
     setIsLoding(true);
     try {
-      const response = await fetch(`/api/users/login`, {
+      let response: any = await fetch(`/api/users/login`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -35,24 +36,34 @@ export default function AuthPage() {
         },
         body: JSON.stringify(formData),
       });
-      if (!response.ok) {
-        throw new Error("Failed to log in");
-      }
-
+      response = await response.json();
+      console.log(response);
       // Assuming the server returns JSON response, you can parse it here
-      const data = await response.json();
-      console.log(data)
-      console.log("Login response:", data);
+      const { email, role } = response.user; // Assuming your API returns user data with these properties
+      sessionStorage.setItem("email", email);
+      sessionStorage.setItem("role", role);
+      setIsLoding(false);
       router.push("/");
-
-      setIsLoding(false);
     } catch (error: any) {
-      console.error(error.response.data);
-      setError(error.response.data.error);
+      console.error(error);
+      setError(error);
       setIsLoding(false);
+      router.push("/");
+    } finally {
+      setIsLoding(false);
+      setError("");
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+      });
     }
   };
-  const handleSignUp = async (formData: { name: string; email: string; password: string; }) => {
+  const handleSignUp = async (formData: {
+    name: string;
+    email: string;
+    password: string;
+  }) => {
     setIsLoding(true);
     try {
       const response = await fetch(`/api/users/register`, {
@@ -79,7 +90,7 @@ export default function AuthPage() {
     }
   };
 
-  const handleSubmit = (e: { preventDefault: () => void; }) => {
+  const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
     if (isLoginForm) {
       handleSignIn(formData);
@@ -91,12 +102,9 @@ export default function AuthPage() {
     <div className="flex h-[100vh] bg-zinc-900 justify-center items-center">
       <div className="w-[350px] shadow-black border-none bg-black text-white shadow-lg rounded-xl">
         <div>
-          <h1 className=" text-xl">
-            {isLoginForm ? "SignIn" : "SignUp"}
-          </h1>
-          <div>
-            Deploy your new project in one-click.
-          </div>
+          <h1 className=" text-xl">{isLoginForm ? "SignIn" : "SignUp"}</h1>
+          <div>Deploy your new project in one-click.</div>
+          {error && <p>{error.message}</p>}
         </div>
         <div>
           <form>
@@ -157,7 +165,7 @@ export default function AuthPage() {
               </button>
             </p>
           </div>
-          <button onClick={handleSubmit}>
+          <button className="cursor-pointer" onClick={handleSubmit}>
             {isLoading ? "Loading..." : isLoginForm ? "Login" : "Sign Up"}
           </button>
         </div>
