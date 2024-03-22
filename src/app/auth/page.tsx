@@ -5,8 +5,8 @@ import React, { useEffect, useState } from "react";
 export default function AuthPage() {
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
-    password: "",
+    email: "admin@example.com",
+    password: "admin@example.com",
   });
   const router = useRouter();
 
@@ -100,15 +100,22 @@ export default function AuthPage() {
   };
   return (
     <div className="flex h-[100vh] bg-zinc-900 justify-center items-center">
-      <div className="w-[350px] shadow-black border-none bg-black text-white shadow-lg rounded-xl">
+      <div className="w-[350px] p-4 shadow-black border-none bg-black text-white shadow-lg rounded-xl">
         <div>
           <h1 className=" text-xl">{isLoginForm ? "SignIn" : "SignUp"}</h1>
-          <div>Deploy your new project in one-click.</div>
+          <p className="font-thin">Welocme to Attendance Aanagement System.</p>
+          <a
+            href="https://github.com/Yash8452/attendance"
+            target="_blank"
+            className="font-thin"
+          >
+            Click to view the source code.
+          </a>
           {error && <p>{error.message}</p>}
         </div>
         <div>
           <form>
-            <div className="grid w-full items-center gap-4">
+            <div className="p-4 grid w-full items-center gap-4">
               {!isLoginForm && (
                 <>
                   <div className="flex flex-col space-y-1.5">
@@ -134,7 +141,7 @@ export default function AuthPage() {
                   value={formData.email}
                   onChange={handleInputChange}
                   id="email"
-                  placeholder="Enter your email..."
+                  placeholder="admin@example.com"
                 />
               </div>
               <div className="flex flex-col space-y-1.5">
@@ -146,7 +153,7 @@ export default function AuthPage() {
                   value={formData.password}
                   onChange={handleInputChange}
                   id="password"
-                  placeholder="Enter your password..."
+                  placeholder="admin@example.com"
                 />
               </div>
             </div>
@@ -154,7 +161,7 @@ export default function AuthPage() {
         </div>
         <div className="flex flex-col  justify-between space-y-4">
           <div className="flex items-center">
-            <p className="ml-2 text-gray-700 text-sm">
+            <p className="text-center ml-2 text-gray-700 text-sm">
               {isLoginForm
                 ? "Don't have an account?"
                 : "Already have an account?"}
