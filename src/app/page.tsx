@@ -2,6 +2,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react"; // Import `useState` for managing state
 import UserTable from "@/components/UserTable";
+import SlideBar from "@/components/SlideBar";
+import Layout from "@/components/Layout";
 export default function Home() {
   const router = useRouter();
   const [isAuthorized, setIsAuthorized] = useState(false); // State for authorization status
@@ -36,19 +38,21 @@ export default function Home() {
     response = await response.json();
     const data = response.attendances;
     setAttendance(data);
-    console.log(response);
+    // console.log(response);
   };
   return (
     <>
       <>
         {isAuthorized ? (
           <>
-            <h1 className="text-center">HOME PAGE</h1>
-
-            <UserTable users={users} attendance={attendance} />
+            <Layout>
+              <UserTable users={users} attendance={attendance} />
+            </Layout>
           </>
         ) : (
-          <h1 className="text-center">NOT AUTHORIZED</h1>
+          <h1 className="mt-24 md:text-4xl font-bold text-center">
+            Your are not authorized or please wait.
+          </h1>
         )}
       </>
     </>

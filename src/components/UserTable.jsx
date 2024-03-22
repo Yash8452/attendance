@@ -1,5 +1,7 @@
 "use client";
+import { Table } from "flowbite-react";
 import React, { useState } from "react";
+import Skeleton from "./Skeleton";
 
 export default function UserTable({ users, attendance }) {
   const [selectedDate, setSelectedDate] = useState(""); // State for selected date
@@ -21,8 +23,7 @@ export default function UserTable({ users, attendance }) {
       const attendanceDate = att.date;
       return (
         (!selectedDate || formatDate(attendanceDate) === selectedDate) &&
-        user._id
-        // att.userId === user._id
+        att.userId === user._id
       );
     })
   );
@@ -36,17 +37,15 @@ export default function UserTable({ users, attendance }) {
     // console.log(response);
   };
 
-//   console.log(filteredUsers);
+  //   console.log(filteredUsers);
 
   return (
     <>
       {users && users.length === 0 ? (
-        <>
-          <h1>No users found</h1>
-        </>
+        <Skeleton />
       ) : (
-        <>
-          <div>
+        <div className="flex mt-6 flex-col w-full">
+          <div className="flex justify-center">
             {/* Input field to select the date */}
             <input
               type="date"
@@ -54,54 +53,59 @@ export default function UserTable({ users, attendance }) {
               onChange={handleDateChange}
             />
           </div>
-          <>
-            {filteredUsers.length === 0 ? (
-              <h1>No users found for selected date</h1>
-            ) : (
-              <>
-                <div className="flex justify-around space-x-2">
-                  <h1>Name</h1>
-                  <h1 className="text-center">Email</h1>
-                  <h1 className="text-center">Status</h1>
-                  <h1 className="text-center">Date</h1>
-                </div>
-                {filteredUsers.map((user) => (
-                  <div className="flex justify-around space-x-2" key={user._id}>
-                    <h1 className="text-center">{user.name}</h1>
-                    <h1 className="text-center">{user.email}</h1>
-                    {/* Find the attendance record for the user and display status and date */}
-                    <h1 className="text-center">
-                      {attendance.find(
-                        (att) => att.userId === user._id && att.status
-                      )?.status || "N/A"}
-                    </h1>
-                    <h1 className="text-center">
-                      {attendance.find(
-                        (att) => att.userId === user._id && att.date
-                      )?.date
-                        ? formatDate(
-                            attendance.find(
-                              (att) => att.userId === user._id && att.date
-                            ).date
-                          )
-                        : "N/A"}
-                    </h1>
-
-                    <select
-                      onChange={(e) =>
-                        handleMarkAttendance(user._id, e.target.value)
-                      }
+          {filteredUsers.length === 0 ? (
+            <h1>No users found for selected date</h1>
+          ) : (
+            <div className="mt-8 w-full overflow-x-auto">
+              <Table>
+                <Table.Head>
+                  <Table.HeadCell>Name</Table.HeadCell>
+                  <Table.HeadCell>Email</Table.HeadCell>
+                  <Table.HeadCell>Status</Table.HeadCell>
+                  <Table.HeadCell>Date</Table.HeadCell>
+                  <Table.HeadCell>Action</Table.HeadCell>
+                </Table.Head>
+                <Table.Body>
+                  {filteredUsers.map((user) => (
+                    <Table.Row
+                      key={user._id}
+                      className="bg-white dark:border-gray-700 dark:bg-gray-800"
                     >
-                      <option value="">Mark Attendance</option>
-                      <option value="PRESENT">Present</option>
-                      <option value="ABSENT">Absent</option>
-                    </select>
-                  </div>
-                ))}
-              </>
-            )}
-          </>
-        </>
+                      <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                        {user.name}
+                      </Table.Cell>
+                      <Table.Cell>{user.email}</Table.Cell>
+                      <Table.Cell>
+                        {attendance.find((att) => att.userId === user._id)
+                          ?.status || "N/A"}
+                      </Table.Cell>
+                      <Table.Cell>
+                        {attendance.find((att) => att.userId === user._id)?.date
+                          ? formatDate(
+                              attendance.find(
+                                (att) => att.userId === user._id && att.date
+                              ).date
+                            )
+                          : "N/A"}
+                      </Table.Cell>
+                      <Table.Cell>
+                        <select
+                          onChange={(e) =>
+                            handleMarkAttendance(user._id, e.target.value)
+                          }
+                        >
+                          <option value="">Mark Attendance</option>
+                          <option value="PRESENT">Present</option>
+                          <option value="ABSENT">Absent</option>
+                        </select>
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table>
+            </div>
+          )}
+        </div>
       )}
     </>
   );

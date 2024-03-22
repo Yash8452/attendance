@@ -16,3 +16,9 @@ export interface UserData {
     email: string;
     password: string;
 }
+export interface User {
+    _id: number;
+    name: string;
+    email: string;
+    createdAt: Date;
+  }
